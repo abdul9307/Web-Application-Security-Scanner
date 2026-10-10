@@ -1,0 +1,10 @@
+http://localhost:3000/gift-card
+http://localhost:3000/gift_card
+http://localhost:3000/insurance_applications
+http://localhost:3000/insurance-applications
+http://localhost:3000/shrdbms
+http://localhost:3000/top-categories
+http://localhost:3000/top_categories
+http://localhost:3000/encryptionkeys
+http://localhost:3000/encryption_keys
+http://localhost:3000/encryption-keys
