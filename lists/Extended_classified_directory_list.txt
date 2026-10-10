@@ -1,0 +1,168 @@
+# Extended Classified Common Directories
+# Categories: CRITICAL, HIGH, MEDIUM, LOW
+
+# ==========================================
+# [CRITICAL] - Secrets, Credentials & Version Control
+# Immediate risk of full compromise or data exposure.
+# ==========================================
+/.aws/
+/.bash_history
+/.bashrc
+/.bzr/
+/.config/
+/.dockerenv
+/.env
+/.env.backup
+/.env.dev
+/.env.local
+/.env.prod
+/.env.staging
+/.git/
+/.git/config
+/.git/HEAD
+/.git/logs/HEAD
+/.gitignore
+/.hg/
+/.kube/
+/.npmrc
+/.ssh/
+/.ssh/authorized_keys
+/.ssh/id_rsa
+/.svn/
+/.svn/entries
+/appsettings.json
+/config.json
+/config.php
+/config.yml
+/credentials
+/database.yml
+/db.php
+/docker-compose.yml
+/docker-compose.yaml
+/id_rsa
+/id_rsa.pub
+/kube-config
+/passwd
+/secret
+/secrets
+/settings.py
+/terraform.tfstate
+/terraform.tfstate.backup
+/web.config
+/wp-config.php
+/wp-config.php.bak
+/wp-config.php.save
+
+# ==========================================
+# [HIGH] - Admin Panels, Backups, Archives & Management
+# Direct management access or legacy unpatched code.
+# ==========================================
+/admin/
+/admin.php
+/administrator/
+/admin_area/
+/admin-console/
+/admin-panel/
+/auth/
+/backup/
+/backups/
+/bak/
+/cpanel/
+/db_backup.sql
+/db_backup.zip
+/dump.sql
+/install/
+/install.php
+/jmx-console/
+/login/
+/manager/
+/manager/html/
+/META-INF/
+/old/
+/old-site/
+/phpmyadmin/
+/plesk/
+/portal/
+/server-info/
+/setup/
+/site.zip
+/sql/
+/tomcat/
+/WEB-INF/
+/WEB-INF/web.xml
+/wp-admin/
+/wp-login.php
+/www.zip
+
+# ==========================================
+# [MEDIUM] - APIs, Development, Logs, Frameworks & Telemetry
+# High recon value, exposes application logic or internal states.
+# ==========================================
+/access.log
+/actuator/
+/actuator/env/
+/actuator/health/
+/api/
+/api-docs/
+/api/v1/
+/api/v2/
+/api/v3/
+/app/
+/composer.json
+/composer.lock
+/debug/
+/dev/
+/development/
+/error.log
+/graphql/
+/health/
+/logs/
+/metrics/
+/node_modules/
+/package.json
+/package-lock.json
+/phpinfo.php
+/server-status/
+/staging/
+/swagger/
+/swagger-ui/
+/swagger-ui.html
+/swagger.json
+/system/
+/test/
+/testing/
+/trace/
+/v1/
+/v2/
+/vendor/
+/xmlrpc.php
+
+# ==========================================
+# [LOW] - Static Assets, Public Files & User Uploads
+# Intended public access, but misconfigurations can lead to directory listing or chainable exploits.
+# ==========================================
+/assets/
+/avatars/
+/css/
+/documents/
+/downloads/
+/favicon.ico
+/files/
+/images/
+/img/
+/includes/
+/js/
+/media/
+/plugins/
+/public/
+/robots.txt
+/sitemap.xml
+/sitemap_index.xml
+/static/
+/themes/
+/uploads/
+/wp-content/
+/wp-content/plugins/
+/wp-content/themes/
+/wp-content/uploads/
+/wp-includes/

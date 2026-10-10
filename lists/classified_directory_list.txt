@@ -1,0 +1,122 @@
+# Classified Common Directories
+# Based on common enumeration wordlists (e.g., SecLists common.txt)
+# Categories: CRITICAL, HIGH, MEDIUM, LOW
+
+# ==========================================
+# [CRITICAL] - Secrets, Credentials & Version Control
+# Immediate risk of full compromise or data exposure.
+# ==========================================
+/.aws/
+/.bash_history
+/.dockerenv
+/.env
+/.env.backup
+/.env.dev
+/.env.prod
+/.git/
+/.git/config
+/.git/HEAD
+/.gitignore
+/.ssh/
+/.svn/
+/.svn/entries
+/config.json
+/config.php
+/config.yml
+/credentials
+/database.yml
+/db.php
+/docker-compose.yml
+/id_rsa
+/id_rsa.pub
+/kube-config
+/passwd
+/secret
+/secrets
+/web.config
+/wp-config.php
+/wp-config.php.bak
+
+# ==========================================
+# [HIGH] - Admin Panels, Backups & Archives
+# Direct management access or legacy unpatched code.
+# ==========================================
+/admin/
+/admin.php
+/administrator/
+/admin_area/
+/admin-console/
+/admin-panel/
+/backup/
+/backups/
+/bak/
+/cpanel/
+/dump.sql
+/install/
+/install.php
+/manager/
+/manager/html
+/old/
+/old-site/
+/phpmyadmin/
+/server-info/
+/setup/
+/site.zip
+/sql/
+/WEB-INF/
+/WEB-INF/web.xml
+/wp-admin/
+/www.zip
+
+# ==========================================
+# [MEDIUM] - APIs, Development, Logs & Telemetry
+# High recon value, exposes application logic or internal states.
+# ==========================================
+/access.log
+/api/
+/api-docs/
+/api/v1/
+/api/v2/
+/app/
+/debug/
+/dev/
+/development/
+/error.log
+/graphql/
+/logs/
+/metrics/
+/phpinfo.php
+/server-status/
+/staging/
+/swagger/
+/swagger-ui/
+/swagger.json
+/system/
+/test/
+/testing/
+/trace/
+/vendor/
+/xmlrpc.php
+
+# ==========================================
+# [LOW] - Static Assets, Public Files & User Uploads
+# Intended public access, but misconfigurations can lead to directory listing or chainable exploits.
+# ==========================================
+/assets/
+/avatars/
+/css/
+/documents/
+/downloads/
+/files/
+/images/
+/img/
+/includes/
+/js/
+/media/
+/public/
+/robots.txt
+/static/
+/themes/
+/uploads/
+/wp-content/
+/wp-content/uploads/
