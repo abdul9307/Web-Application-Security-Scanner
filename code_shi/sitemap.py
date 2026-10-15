@@ -98,6 +98,3 @@ def classify_path(directories_file, classification_file):
                     break
             out_file.write(f"{line} - {assigned_risk}\n")
     
-    
-check_directory_list("https://localhost:3000", "C:\\Users\\mabdu\\Downloads\\School\\Computer\\Web-Application-Security-Scanner\\lists\\Web-Content\\common_directories.txt")
-classify_path("C:\\Users\\mabdu\\Downloads\\School\\Computer\\Web-Application-Security-Scanner\\Directory_Numeration_Results\\localhost_3000_directories.txt", "C:\\Users\\mabdu\\Downloads\\School\\Computer\\Web-Application-Security-Scanner\\lists\\classified_directory_list.txt")
