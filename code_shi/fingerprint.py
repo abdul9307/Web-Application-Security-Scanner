@@ -3,10 +3,33 @@ from urllib.parse import urlsplit
 import ssl
 import socket
 import dns.resolver
+import os
+
+def setup_file(url):
+    # Creates the output folder and returns the file path
+    if not url.startswith(('http://', 'https://')):
+        url = 'https://' + url
+
+    domain = urlsplit(url).hostname
+    if domain.startswith('www.'):
+        domain = domain[4:]
+
+    # Create folder if it doesn't exist
+    os.makedirs("Fingerprinting_Results", exist_ok=True)
+    # Define file path
+    file_path = f"Fingerprinting_Results/Fingerprint_{domain}.txt"
+    # Add a header to the file for this scan session
+    with open(file_path, 'a') as f:
+        f.write(f"\n{'='*50}\n--- New Scan Started for {domain} ---\n{'='*50}\n")
+    return file_path
 
 
+def log(msg, output_file):
+    with open(output_file, 'a') as f:
+        f.write(msg + '\n')
 
 def check_headers(url):
+    output_file = setup_file(url);
     headers_to_check = [
                         # Server: Web Server and Version, Date: Date and Time, Via: Proxy servers, gateways
                         "Server", "Date", "Via",
@@ -26,11 +49,12 @@ def check_headers(url):
         response = requests.head(url, timeout=5)
         for header in headers_to_check:
             if header in response.headers:
-                print(f"{header}: {response.headers[header]}")
+                log(f"{header}: {response.headers[header]}", output_file)
     except requests.RequestException as e:
-        print(f"Error connecting to target: {e}")
+        log(f"Error connecting to target: {e}", output_file)
 
 def check_certificates(url):
+    output_file = setup_file(url);
     # Checks SSL certificate
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
@@ -41,7 +65,7 @@ def check_certificates(url):
     # Creates an SSL context object: default secure settings with certificate validation
     context = ssl.create_default_context()
     for port in ports:
-        print(f"\n[*] Testing {hostname} on port {port}...")
+        log(f"\n[*] Testing {hostname} on port {port}...", output_file)
     
         try:
             # Opens a standard TCP connection to target port
@@ -50,26 +74,27 @@ def check_certificates(url):
                 with context.wrap_socket(sock, server_hostname=hostname) as ssock:
                     # returns SSL certificate
                     cert = ssock.getpeercert()
-                    print("  [+] SSL Certificate found!")
+                    log("  [+] SSL Certificate found!", output_file)
                     # Issuer: Certificate Authority (CA)
-                    print("  Issuer:", cert.get("issuer"))
-                    print("  Subject:", cert.get("subject"))
+                    log("  Issuer:", cert.get("issuer"), output_file)
+                    log("  Subject:", cert.get("subject"), output_file)
                     
         except ConnectionRefusedError:
-            print("  [-] Port is closed (Connection refused).")
+            log("  [-] Port is closed (Connection refused).", output_file)
         except socket.timeout:
-            print("  [-] Connection timed out (Port likely filtered by a firewall).")
+            log("  [-] Connection timed out (Port likely filtered by a firewall).", output_file)
         except ssl.SSLError:
-            print("  [-] Port is open, but it is not running a standard SSL/TLS service.")
+            log("  [-] Port is open, but it is not running a standard SSL/TLS service.", output_file)
         except Exception as e:
-            print(f"  [-] Unexpected error: {e}")
+            log(f"  [-] Unexpected error: {e}", output_file)
 
 def check_default_files(url):
+    output_file = setup_file(url)
     # Ensure the base URL doesn't end with a slash so we don't get double slashes
     base_url = url.rstrip('/')
     files_to_check = ["/robots.txt", "/sitemap.xml", "/.well-known/security.txt", "/humans.txt"]
     
-    print(f"\n[*] Checking for default files on {base_url}...")
+    log(f"\n[*] Checking for default files on {base_url}...", output_file)
     for file in files_to_check:
         target_url = base_url + file
         try:
@@ -77,13 +102,14 @@ def check_default_files(url):
             # for a HEAD request even if the file is just a custom 404 page.
             response = requests.get(target_url, timeout=5)
             if response.status_code == 200:
-                print(f"  [+] Found: {target_url}")
+                log(f"  [+] Found: {target_url}", output_file)
             else:
-                print(f"  [-] Not Found (Status {response.status_code}): {file}")
+                log(f"  [-] Not Found (Status {response.status_code}): {file}", output_file)
         except requests.RequestException as e:
-            print(f"  [-] Error checking {file}: {e}")
+            log(f"  [-] Error checking {file}: {e}", output_file)
 
 def check_dns_records(url):
+    output_file = setup_file(url)
     # Parse the domain out of the URL
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
@@ -92,19 +118,19 @@ def check_dns_records(url):
     if domain.startswith('www.'):
         domain = domain[4:]
         
-    print(f"\n[*] Checking DNS Records for {domain}...")
+    log(f"\n[*] Checking DNS Records for {domain}...", output_file)
     # A: IP4 addresses, MX: Mail exchange records, TXT: Text records
     record_types = ['A', 'MX', 'TXT']
     for record in record_types:
         try:
             answers = dns.resolver.resolve(domain, record)
-            print(f"\n  [+] {record} Records Found:")
+            log(f"\n  [+] {record} Records Found:", output_file)
             for rdata in answers:
-                print(f"      - {rdata.to_text()}")
+                log(f"      - {rdata.to_text()}", output_file)
         except dns.resolver.NoAnswer:
-            print(f"\n  [-] No {record} records found.")
+            log(f"\n  [-] No {record} records found.", output_file)
         except dns.resolver.NXDOMAIN:
-            print(f"\n  [-] Domain {domain} does not exist.")
+            log(f"\n  [-] Domain {domain} does not exist.", output_file)
             break # If the domain doesn't exist, stop checking other records
         except Exception as e:
-            print(f"\n  [-] Error retrieving {record} records: {e}")
+            log(f"\n  [-] Error retrieving {record} records: {e}", output_file)

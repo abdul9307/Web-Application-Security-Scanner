@@ -2,6 +2,8 @@ import requests
 from pathlib import Path
 from urllib.parse import urlparse
 
+
+
 # Checks if a given URL is valid by sending a GET request and checking the response status code
 def check_url(url):
     try:
