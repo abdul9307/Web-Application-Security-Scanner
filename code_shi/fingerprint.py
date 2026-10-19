@@ -33,6 +33,7 @@ def log(msg, output_file):
         f.write(msg + '\n')
 
 def check_headers(url, output_file):
+    print("Checking HTTP headers for security and tech stack information...", output_file)
     headers_to_check = [
                         # Server: Web Server and Version, Date: Date and Time, Via: Proxy servers, gateways
                         "Server", "Date", "Via",
@@ -55,9 +56,11 @@ def check_headers(url, output_file):
                 log(f"{header}: {response.headers[header]}", output_file)
     except requests.RequestException as e:
         log(f"Error connecting to target: {e}", output_file)
+    print("HTTP header check completed. Results saved to:", output_file)
 
 
 def check_certificates(url, output_file):
+    print("Checking SSL/TLS certificates for validity and issuer information...", output_file)
     # Checks SSL certificate
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
@@ -78,9 +81,10 @@ def check_certificates(url, output_file):
                     # returns SSL certificate
                     cert = ssock.getpeercert()
                     log("  [+] SSL Certificate found!", output_file)
+                    print("  [+] SSL Certificate found!")
                     # Issuer: Certificate Authority (CA)
-                    log("  Issuer:", cert.get("issuer"), output_file)
-                    log("  Subject:", cert.get("subject"), output_file)
+                    log("  Issuer:" + str(cert.get("issuer")), output_file)
+                    log("  Subject:" + str(cert.get("subject")), output_file)
                     
         except ConnectionRefusedError:
             log("  [-] Port is closed (Connection refused).", output_file)
@@ -90,9 +94,11 @@ def check_certificates(url, output_file):
             log("  [-] Port is open, but it is not running a standard SSL/TLS service.", output_file)
         except Exception as e:
             log(f"  [-] Unexpected error: {e}", output_file)
+        print(f"SSL/TLS check completed for port {port}. Results saved to: {output_file}")
 
 
 def check_default_files(url, output_file):
+    print("Checking for default files like robots.txt, sitemap.xml, and security.txt...")
     # Ensure the base URL doesn't end with a slash so we don't get double slashes
     base_url = url.rstrip('/')
     files_to_check = ["/robots.txt", "/sitemap.xml", "/.well-known/security.txt", "/humans.txt"]
@@ -110,8 +116,10 @@ def check_default_files(url, output_file):
                 log(f"  [-] Not Found (Status {response.status_code}): {file}", output_file)
         except requests.RequestException as e:
             log(f"  [-] Error checking {file}: {e}", output_file)
+        print(f"Default file check completed for {file}. Results saved to: {output_file}")
 
 def check_dns_records(url, output_file):
+    print("Checking DNS records for A, MX, and TXT entries...")
     # Parse the domain out of the URL
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
@@ -136,8 +144,10 @@ def check_dns_records(url, output_file):
             break # If the domain doesn't exist, stop checking other records
         except Exception as e:
             log(f"\n  [-] Error retrieving {record} records: {e}", output_file)
+        print(f"DNS record check completed for {record}. Results saved to: {output_file}")
 
 def check_http_methods(url, output_file):
+    print("Checking allowed HTTP methods for potential security risks...")
     log(f"\n[*] Checking allowed HTTP methods for {url}...", output_file)
     try:
         # Using requests.options() specifically
@@ -153,8 +163,10 @@ def check_http_methods(url, output_file):
             
     except requests.RequestException as e:
         log(f"  [-] Error checking methods: {e}", output_file)
+    print(f"HTTP methods check completed. Results saved to: {output_file}")
 
 def check_waf(url, output_file):
+    print("Checking for Web Application Firewall (WAF) presence...")
     base_url = url.rstrip('/')
     # A standard payload that WAFs are hardcoded to block
     malicious_url = base_url + "/?id=<script>alert('WAF_TEST')</script>"
@@ -175,9 +187,11 @@ def check_waf(url, output_file):
             
     except requests.RequestException as e:
         log(f"  [-] Error during WAF test: {e}", output_file)
+    print(f"WAF check completed. Results saved to: {output_file}")
 
     
 def enumerate_subdomains(url, output_file):
+    print("Enumerating subdomains using crt.sh...")
     domain = urlsplit(url).hostname
     if domain.startswith('www.'):
         domain = domain[4:]
@@ -210,8 +224,10 @@ def enumerate_subdomains(url, output_file):
             
     except Exception as e:
         log(f"  [-] Error enumerating subdomains: {e}", output_file)
+    print(f"Subdomain enumeration completed. Results saved to: {output_file}")
 
 def check_html_generator(url, output_file):
+    print(f"Checking HTML source for CMS/Generator tags on {url}...")
     log(f"\n[*] Checking HTML source for CMS/Generator tags...", output_file)
     try:
         response = requests.get(url, timeout=5)
@@ -231,8 +247,10 @@ def check_html_generator(url, output_file):
             
     except requests.RequestException as e:
         log(f"  [-] Error retrieving HTML: {e}", output_file)
+    print(f"HTML generator check completed. Results saved to: {output_file}")
 
 def crawl_site(url, output_file, max_depth=2):
+    print(f"Starting recursive crawl on {url} (Max Depth: {max_depth})...")
     # Track visited URLs to prevent infinite loops
     visited = set()
     
@@ -278,8 +296,10 @@ def crawl_site(url, output_file, max_depth=2):
 
     log(f"\n[*] Starting recursive crawl on {url} (Max Depth: {max_depth})...", output_file)
     crawl(url, 0)
+    print(f"Crawl completed. Total unique pages visited: {len(visited)}. Results saved to: {output_file}")
 
 def check_unfinished_site(url, output_file):
+    print(f"Checking {url} for unfinished/default boilerplate content...")
     log(f"\n[*] Checking {url} for unfinished/default boilerplate...", output_file)
     
     # Common strings left behind on unfinished or default server pages
@@ -313,6 +333,7 @@ def check_unfinished_site(url, output_file):
             
     except requests.RequestException as e:
         log(f"  [-] Error checking content: {e}", output_file)
+    print(f"Unfinished site check completed. Results saved to: {output_file}")
 
 def find_version_leaks(body):
     # Scans a raw response body for leaked version strings and stack-trace signatures.
@@ -424,6 +445,7 @@ def _probe_port(hostname, port, use_ssl, output_file):
 
 
 def grab_banner(url, output_file, ports=None):
+    print(f"Starting banner grab sweep on {url}...")
     # Sweeps the malformed-request banner grab across multiple ports.
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
@@ -451,17 +473,40 @@ def grab_banner(url, output_file, ports=None):
 
     for port in sorted(port_map):
         _probe_port(hostname, port, port_map[port], output_file)
+    print(f"Banner grab sweep completed. Results saved to: {output_file}")
 
 
-def scan_single_port(hostname, port):
-    # Worker function to test a single port.
+
+def scan_single_port(hostname, port, timeout=3):
     try:
-        with socket.create_connection((hostname, port), timeout=1):
-            return port, True
-    except (socket.timeout, ConnectionRefusedError, OSError):
-        return port, False
+        with socket.create_connection((hostname, port), timeout=timeout):
+            return port, "open"
+    except ConnectionRefusedError:
+        return port, "closed"
+    except (socket.timeout, OSError):
+        return port, "filtered"
+
+def parse_ports(content):
+    ports = set()
+    for token in content.replace('\n', ',').replace('\r', ',').split(','):
+        token = token.strip()
+        if not token:
+            continue
+        if '-' in token:                      # a range like "19-26"
+            try:
+                lo, hi = (int(x) for x in token.split('-', 1))
+            except ValueError:
+                continue
+            if 0 <= lo <= hi <= 65535:
+                ports.update(range(lo, hi + 1))
+        elif token.isdigit():
+            p = int(token)
+            if 0 <= p <= 65535:
+                ports.add(p)
+    return sorted(ports)
 
 def threaded_port_scan(url, output_file, port_file, max_threads=50):
+    print(f"Starting threaded port scan on {url} using ports from {port_file}...")
     # Orchestrates the threaded scanning using ports read from a file.
     KNOWN_SERVICES = {
     21: "FTP", 22: "SSH", 23: "Telnet", 25: "SMTP", 53: "DNS", 
@@ -483,10 +528,7 @@ def threaded_port_scan(url, output_file, port_file, max_threads=50):
         with open(port_file, 'r') as file:
             content = file.read()
             # Split by comma, strip whitespace, and keep only valid numbers
-            ports_to_scan = [
-                int(p.strip()) for p in content.split(',') 
-                if p.strip().isdigit()
-            ]
+            ports_to_scan = parse_ports(content)
     except Exception as e:
         log(f"\n[-] Error reading port file: {e}", output_file)
         return
@@ -498,7 +540,9 @@ def threaded_port_scan(url, output_file, port_file, max_threads=50):
     # Remove duplicates if the user accidentally typed the same port twice
     ports_to_scan = list(set(ports_to_scan))
     
+    
     log(f"\n[*] Starting TCP Port Scan on {hostname} for {len(ports_to_scan)} ports (Threads: {max_threads})...", output_file)
+    print("80 in list:", 80 in ports_to_scan, " 443 in list:", 443 in ports_to_scan)
     open_ports = []
     
     # 2. Execute the concurrent scan
@@ -521,3 +565,4 @@ def threaded_port_scan(url, output_file, port_file, max_threads=50):
         # Sort the results numerically before printing the final summary
         open_ports.sort()
         log(f"\n[*] Scan complete. Found {len(open_ports)} open ports: {open_ports}", output_file)
+    print(f"Threaded port scan completed. Results saved to: {output_file}")

@@ -8,9 +8,9 @@ safe_domain = parsed_url.netloc.replace(':', '_')
 classified_list = r"C:\Users\mabdu\Downloads\School\Computer\Web-Application-Security-Scanner\lists\classified_directory_list.txt"
 output_file = fingerprint.setup_file(target_url);
 
-sitemap.check_directory_list(target_url, "C:\\Users\\mabdu\\Downloads\\School\\Computer\\Web-Application-Security-Scanner\\lists\\Web-Content\\common.txt")
-results_file = fr"C:\Users\mabdu\Downloads\School\Computer\Web-Application-Security-Scanner\Directory_Numeration_Results\{safe_domain}_directories.txt"
-sitemap.classify_path(results_file, "C:\\Users\\mabdu\\Downloads\\School\\Computer\\Web-Application-Security-Scanner\\lists\\classified_directory_list.txt")
+# sitemap.check_directory_list(target_url, "C:\\Users\\mabdu\\Downloads\\School\\Computer\\Web-Application-Security-Scanner\\lists\\Web-Content\\common.txt")
+results_file = fr"C:\Users\mabdu\Downloads\School\Computer\Web-Application-Security-Scanner\code_shi\Directory_Numeration_Results\{safe_domain}_directories.txt"
+print(f"Directory numeration results will be saved to: {results_file}")
 fingerprint.check_headers(target_url, output_file)
 fingerprint.check_certificates(target_url, output_file)
 fingerprint.check_http_methods(target_url, output_file)
