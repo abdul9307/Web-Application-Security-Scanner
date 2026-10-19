@@ -33,7 +33,7 @@ def log(msg, output_file):
         f.write(msg + '\n')
 
 def check_headers(url, output_file):
-    print("Checking HTTP headers for security and tech stack information...", output_file)
+    print("Checking HTTP headers for security and tech stack information...")
     headers_to_check = [
                         # Server: Web Server and Version, Date: Date and Time, Via: Proxy servers, gateways
                         "Server", "Date", "Via",
@@ -60,7 +60,7 @@ def check_headers(url, output_file):
 
 
 def check_certificates(url, output_file):
-    print("Checking SSL/TLS certificates for validity and issuer information...", output_file)
+    print("Checking SSL/TLS certificates for validity and issuer information...")
     # Checks SSL certificate
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
@@ -553,8 +553,8 @@ def threaded_port_scan(url, output_file, port_file, max_threads=50):
         }
         
         for future in concurrent.futures.as_completed(future_to_port):
-            port, is_open = future.result()
-            if is_open:
+            port, state = future.result()
+            if state == "open":
                 service = KNOWN_SERVICES.get(port, "Unknown Service")
                 log(f"  [+] Port {port}/TCP is OPEN ({service})", output_file)
                 open_ports.append(port)
