@@ -28,23 +28,47 @@ def write_to_file(filename, data):
 def check_directory_list(target_url, directory_list):
     # Parse the target URL to create a safe filename for storing results
     parsed_url = urlparse(target_url)
-    # Create a safe filename by replacing ':' with '_'
     safe_domain = parsed_url.netloc.replace(':', '_')
     create_folder("Directory_Numeration_Results")
+    
+    output_file = f"Directory_Numeration_Results/{safe_domain}_directories.txt"
+    
+    # Define the extensions you want to brute-force
+    archive_extensions = ['.bak', '.old', '.tar.gz', '.zip', '.sql']
+    
     try:
         with open(directory_list, 'r') as file:
             directories = file.readlines()
+            
+        print(f"[*] Starting directory and archive enumeration on {target_url}...")
+        
         for directory in directories:
+            # Clean up the directory string and remove trailing slashes for archive appending
             directory = directory.strip()
+            if not directory:
+                continue
+                
+            clean_dir = directory.rstrip('/')
+            
+            # 1. Check the normal directory path
             full_url = f"{target_url}/{directory}"
             if check_url(full_url):
-                write_to_file("Directory_Numeration_Results/" + safe_domain + '_directories.txt', full_url)
+                print(f"  [+] Found: {full_url}")
+                write_to_file(output_file, full_url)
+                
+            # 2. Append extensions and check for exposed archives
+            for ext in archive_extensions:
+                archive_url = f"{target_url}/{clean_dir}{ext}"
+                if check_url(archive_url):
+                    print(f"  [!] EXPOSED ARCHIVE FOUND: {archive_url}")
+                    write_to_file(output_file, f"{archive_url} (Archive)")
+                    
     except FileNotFoundError:
-                print(f"Directory list file '{directory_list}' not found.")
-                return
+        print(f"Directory list file '{directory_list}' not found.")
+        return
     except Exception as e:
-                print(f"An error occurred: {e}")
-                return
+        print(f"An error occurred: {e}")
+        return
 
 def load_classifications(classification_file):
     # Load classifications from a file and return a dictionary mapping paths to their risk levels.
